@@ -1,2 +1,0 @@
-composer create-project laravel/laravel backend
-npx create-react-app frontend

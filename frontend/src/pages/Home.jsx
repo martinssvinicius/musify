@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import api from '../lib/axios'
+import Player from '../components/Player'
 
 export default function Home() {
     const { user, logout } = useAuth()
-    const [songs, setSongs]     = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError]     = useState(null)
+    const [songs, setSongs]           = useState([])
+    const [loading, setLoading]       = useState(true)
+    const [error, setError]           = useState(null)
+    const [currentSong, setCurrentSong] = useState(null)  // <- novo
 
     useEffect(() => {
         api.get('/songs')
@@ -52,9 +54,20 @@ export default function Home() {
                         </thead>
                         <tbody>
                             {songs.map((song, index) => (
-                                <tr key={song.id} style={styles.row}>
-                                    <td style={styles.td}>{index + 1}</td>
-                                    <td style={styles.td}>{song.title}</td>
+                                <tr
+                                    key={song.id}
+                                    style={{
+                                        ...styles.row,
+                                        backgroundColor: currentSong?.id === song.id ? '#1a3a1a' : 'transparent'
+                                    }}
+                                    onClick={() => setCurrentSong(song)}
+                                >
+                                    <td style={styles.td}>
+                                        {currentSong?.id === song.id ? '▶' : index + 1}
+                                    </td>
+                                    <td style={{...styles.td, color: currentSong?.id === song.id ? '#1db954' : '#ccc'}}>
+                                        {song.title}
+                                    </td>
                                     <td style={styles.td}>{song.artist?.name}</td>
                                     <td style={styles.td}>{song.album?.title ?? '—'}</td>
                                     <td style={styles.td}>{formatDuration(song.duration)}</td>
@@ -64,6 +77,9 @@ export default function Home() {
                     </table>
                 )}
             </div>
+
+            {/* Player fixo no rodapé */}
+            <Player song={currentSong} />
         </div>
     )
 }
@@ -73,6 +89,7 @@ const styles = {
         minHeight: '100vh',
         backgroundColor: '#0f0f0f',
         color: '#fff',
+        paddingBottom: '80px',
     },
     header: {
         display: 'flex',
