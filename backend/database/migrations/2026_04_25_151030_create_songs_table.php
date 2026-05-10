@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('songs', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->foreignId('artist_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('album_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('file_path');
+            $table->integer('duration')->default(0);
+            $table->integer('track_number')->nullable();
             $table->timestamps();
         });
     }
